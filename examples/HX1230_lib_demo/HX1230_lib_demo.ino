@@ -68,20 +68,18 @@ void loop()
   lcd.printStr(0, 1, "ĄĆĘŁÓŚŹŻ 123");
   lcd.setDigitMinWd(6);
   lcd.printStr(0, 2, "1234567890123");
-  lcd.setFontMinWd(5);
+  lcd.setCharMinWd(5);
   lcd.printStr(0, 3, "abAwij1234");
-  lcd.setFontMinWd(0);
+  lcd.setCharMinWd(0);
   lcd.printStr(0, 4, "abAwij1234");
   lcd.setDigitMinWd(0);
   lcd.printStr(0, 5, "abAwij1234");
-  lcd.setDigitMinWd(6);
   lcd.setCharMinWd(6);
   lcd.printStr(0, 6, "abAwij1234");
-  lcd.setDigitMinWd(7);
-  lcd.setCharMinWd(7);
+  lcd.setCharMinWd(8);
   lcd.printStr(0, 7, "abAwij1234");
   delay(5000);
-  
+
   lcd.clrScr();
   lcd.setFont(Term8x14PL);
   lcd.printStr(42+12, 4, "Żółw1");
