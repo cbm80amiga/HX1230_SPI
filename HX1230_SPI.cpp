@@ -155,7 +155,7 @@ void HX1230_SPI::sleep(bool mode)
 void HX1230_SPI::setContrast(byte val)
 {
   CS_ACTIVE;
-	sendCmd(HX1230_CONTRAST|(val&0x1f));
+  sendCmd(HX1230_CONTRAST|(val&0x1f));
   CS_IDLE;
 }
 // ----------------------------------------------------------------
@@ -163,19 +163,20 @@ void HX1230_SPI::setContrast(byte val)
 void HX1230_SPI::setScroll(byte val)
 {
   CS_ACTIVE;
-	sendCmd(HX1230_SCAN_START_LINE|(val&0x3f));
+  sendCmd(HX1230_SCAN_START_LINE|(val&0x3f));
   CS_IDLE;
 }
 // ----------------------------------------------------------------
+// 0..3
 void HX1230_SPI::setRotate(int mode)
 {
   CS_ACTIVE;
   if(mode==2) { // supported rotate 180 deg only
-  	sendCmd(HX1230_SEG_REMAP);
-  	sendCmd(HX1230_COM_REMAP);
+    sendCmd(HX1230_SEG_REMAP);
+    sendCmd(HX1230_COM_REMAP);
   } else {
-  	sendCmd(HX1230_SEG_NORMAL);
-  	sendCmd(HX1230_COM_NORMAL);
+    sendCmd(HX1230_SEG_NORMAL);
+    sendCmd(HX1230_COM_NORMAL);
   }
   CS_IDLE;
 }
@@ -183,14 +184,14 @@ void HX1230_SPI::setRotate(int mode)
 void HX1230_SPI::displayInvert(bool mode)
 {
   CS_ACTIVE;
-	sendCmd(mode ? HX1230_INVERT_ON : HX1230_INVERT_OFF);
+  sendCmd(mode ? HX1230_INVERT_ON : HX1230_INVERT_OFF);
   CS_IDLE;
 }
 // ----------------------------------------------------------------
 void HX1230_SPI::displayOn(bool mode)
 {
   CS_ACTIVE;
-	sendCmd(mode ? HX1230_DISPLAY_ON : HX1230_DISPLAY_OFF);
+  sendCmd(mode ? HX1230_DISPLAY_ON : HX1230_DISPLAY_OFF);
   CS_IDLE;
 }
 // ----------------------------------------------------------------
@@ -199,7 +200,7 @@ void HX1230_SPI::displayOn(bool mode)
 void HX1230_SPI::displayMode(byte val)
 {
   CS_ACTIVE;
-	sendCmd(val);
+  sendCmd(val);
   CS_IDLE;
 }
 // ----------------------------------------------------------------
@@ -230,8 +231,8 @@ int HX1230_SPI::fillWin(int x, uint8_t y8, uint8_t wd, uint8_t ht8, uint8_t val)
   ALIGNMENT;
   for(int i=0; i<ht8; i++) {
     gotoXY(x,y8+i);
-	  CS_ACTIVE;
-	  for(int j=0; j<wd; j++) sendSPI(val,DAT);
+    CS_ACTIVE;
+    for(int j=0; j<wd; j++) sendSPI(val,DAT);
     CS_IDLE;
   }
   return x+wd;
@@ -243,9 +244,8 @@ int HX1230_SPI::drawBuf(const uint8_t *bmp, int x, uint8_t y8, uint8_t wd, uint8
   ALIGNMENT;
   for(int i=0; i<ht8; i++) {
     gotoXY(x,y8+i);
-  	CS_ACTIVE;
-	  for(int x=0; x<wd; x++) sendData(*(bmp+wdb*i+x));
-    //sendData(bmp+wdb*i, wd);
+    CS_ACTIVE;
+    for(int x=0; x<wd; x++) sendSPI(*(bmp+wdb*i+x),DAT);
     CS_IDLE;
   }
   return x+wd;
@@ -257,8 +257,8 @@ int HX1230_SPI::drawBitmap(const uint8_t *bmp, int x, uint8_t y8, uint8_t wd, ui
   ALIGNMENT;
   for(int i=0; i<ht8; i++) {
     gotoXY(x,y8+i);
-  	CS_ACTIVE;
-	  for(int x=0; x<wd; x++) sendData(pgm_read_byte(bmp+wdb*i+x));
+    CS_ACTIVE;
+    for(int x=0; x<wd; x++) sendData(pgm_read_byte(bmp+wdb*i+x));
     CS_IDLE;
   }
   return x+wd;
@@ -275,16 +275,16 @@ int HX1230_SPI::drawBitmap(const uint8_t *bmp, int x, uint8_t y8)
 // ---------------------------------
 void HX1230_SPI::setFont(const uint8_t* f)
 {
-  font     = f;
-  xSize    =-pgm_read_byte(font+0);
-  ySize    = pgm_read_byte(font+1);
-  firstCh  = pgm_read_byte(font+2);
-  lastCh   = pgm_read_byte(font+3);
-  ySize8   = (ySize+7)/8;
+  font       = f;
+  xSize      =-pgm_read_byte(font+0);
+  ySize      = pgm_read_byte(font+1);
+  firstCh    = pgm_read_byte(font+2);
+  lastCh     = pgm_read_byte(font+3);
+  ySize8     = (ySize+7)/8;
   minCharWd  = 0;
   minDigitWd = 0;
-  cr = 0;
-  invertCh = 0;
+  cr         = 0;
+  invertCh   = 0;
   invertMask = 0xff;
 }
 // ---------------------------------
@@ -353,13 +353,12 @@ int HX1230_SPI::charWidth(uint8_t _ch, bool last)
   int idx = 4 + (ch - firstCh)*(xSize*ySize8+1);
   int wd = pgm_read_byte(font + idx);
   int wdL = 0, wdR = 1; // default spacing before and behind char
-  if((*isNumberFun)(ch)) {
+  if((*isNumberFun)(ch) && minDigitWd>0) {
     if(minDigitWd>wd) {
       wdL = (minDigitWd-wd)/2;
       wdR += (minDigitWd-wd-wdL);
     }
-  } else
-  if(minCharWd>wd) {
+  } else if(minCharWd>wd) {
     wdL = (minCharWd-wd)/2;
     wdR += (minCharWd-wd-wdL);
   }
@@ -379,13 +378,12 @@ int HX1230_SPI::printChar(int x, uint8_t row, uint8_t _ch)
   int j,i, idx = 4 + (ch - firstCh)*(xSize*ySize8+1);
   int wd = pgm_read_byte(font + idx++);
   int wdL = 0, wdR = 1; // default spacing before and behind char
-  if((*isNumberFun)(ch)) {
+  if((*isNumberFun)(ch) && minDigitWd>0) {
     if(minDigitWd>wd) {
       wdL = (minDigitWd-wd)/2;
       wdR += (minDigitWd-wd-wdL);
     }
-  } else
-  if(minCharWd>wd) {
+  } else if(minCharWd>wd) {
     wdL = (minCharWd-wd)/2;
     wdR += (minCharWd-wd-wdL);
   }
@@ -413,7 +411,7 @@ unsigned char HX1230_SPI::convertPolish(unsigned char _c)
 {
   unsigned char pl, c = _c;
   if(c==196 || c==197 || c==195) {
-	  dualChar = c;
+    dualChar = c;
     return 0;
   }
   if(dualChar) { // UTF8 coding
