@@ -88,10 +88,10 @@ public:
   void setFontMinWd(uint8_t wd) { minCharWd = wd; }
   void setCharMinWd(uint8_t wd) { minCharWd = wd; }
   void setDigitMinWd(uint8_t wd) { minDigitWd = wd; }
-  int printStr(int x, uint8_t y8, char *txt, int clrLine=0);
+  int printStr(int x, uint8_t y8, const char *txt, int clrLine=0);
   int printChar(int x, uint8_t y8, uint8_t ch);
   int charWidth(uint8_t _ch, bool last=true);
-  int strWidth(char *txt);
+  int strWidth(const char *txt);
   unsigned char convertPolish(unsigned char _c);
   static bool isNumber(uint8_t ch);
   static bool isNumberExt(uint8_t ch);

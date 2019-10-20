@@ -39,7 +39,7 @@ HX1230_SPI::HX1230_SPI(byte rst, byte cs, byte din, byte clk)
 // dc=0 -> command
 // dc=1 -> data
 #if USESPI==1
-// hardware SPI: 9 bits are sent in 2 bytes, still faster than software implementation (108-140fps)
+// hardware SPI: 9 bits are sent in 2 bytes, still faster than software implementation (108-180fps)
 inline void HX1230_SPI::sendSPI(uint8_t v, uint8_t dc)
 {
   CS_ACTIVE;
@@ -289,7 +289,7 @@ void HX1230_SPI::setFont(const uint8_t* f)
 }
 // ---------------------------------
 // clrLine - clears screen before and after text
-int HX1230_SPI::printStr(int x, uint8_t y8, char *txt, int clrLine)
+int HX1230_SPI::printStr(int x, uint8_t y8, const char *txt, int clrLine)
 {
   if(!font) return 0;
   int xpos = x;
@@ -322,7 +322,7 @@ int HX1230_SPI::printStr(int x, uint8_t y8, char *txt, int clrLine)
   return xpos;
 }
 // ---------------------------------
-int HX1230_SPI::strWidth(char *txt)
+int HX1230_SPI::strWidth(const char *txt)
 {
   if(!font || !txt || !*txt) return 0;
   int wd = 0;
