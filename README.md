@@ -3,6 +3,9 @@ Fast and low resource 9-bit SPI library for HX1230 96x68 display (aka Nokia 1202
 
 Doesn't use RAM as framebuffer - renders everything directly to LCD framebuffer
 
+YouTube videos:
+https://www.youtube.com/playlist?list=PLxb1losWErZ5eNiQAwB75pXTec5KzX_Cf
+
 ## Connections
 
 |HX1230 pin|Pin name| Arduino|
